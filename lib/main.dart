@@ -6,21 +6,21 @@ void main() {
   runApp(App());
 }
 
-// Widgets are components.
+// Fluter Widgets === React Components
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // ChangeNotifierProvider is equivalent to React Context?
+    // Flutter's ChangeNotifierProvider ~ React's Context
     return ChangeNotifierProvider(
-      // create is similar to Context.Provider's value
+      // create: (context) => AppState() ~ <Context.Provider value={appStateWithSetters}>
       create: (context) => AppState(),
       child: MaterialApp(
         title: 'Namer App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
         ),
         home: HomeScreen(),
       ),
@@ -28,72 +28,157 @@ class App extends StatelessWidget {
   }
 }
 
-// A widget's state gets defined as a class separate from the actual widget?
+// Widget's state defined as a class separate from rendered widget?
 class AppState extends ChangeNotifier {
-  // State data goes here
+  // Current word pair to display
   var current = WordPair.random();
+
+  // Generate new word pair
   void getNext() {
     current = WordPair.random();
-    // So I need to call this notifyListeners method otherwise AppState watchers don't rerender?
+    // Flutter "context" provider requires additional notify function
+    notifyListeners();
+  }
+
+  // Flutter is strongly typed; Dart refueses to run if type safety gets broken. Nice.
+  // [] indicates List, {} indicates Set
+  var favorites = <WordPair>{};
+
+  void toggleFavorite() {
+    if (favorites.contains(current)) {
+      favorites.remove(current);
+    } else {
+      favorites.add(current);
+    }
     notifyListeners();
   }
 }
 
 class HomeScreen extends StatelessWidget {
   @override
-  // Widget's build() method is equivalent to component's render() method
-  // build() gets called every time relevant state changes and must return a widget
+  // Flutter Widget's build() == React component's render()
+  // build() must return a widget, gets called every time "relevant" state changes
   Widget build(BuildContext context) {
-    print('render widget');
-    // context.watch is Flutter's useContext(AppContext);
-    // child widgets rerender even if they don't themselves call context.watch
-    // it seems all child widgets rerender if a parent's state changes, even if only
-    // some of the child widgets call context.watch
-    // var appState = context.watch<AppState>();
+    print('render HomeScreen');
+    // Flutter's context.watch<AppState>() === React's useContext(AppContext);
+    // Observation: child widgets rerender even if they don't themselves call context.watch
+    // (it seems all widgets rerender if a parent's state changes, even if only
+    // some child widgets call context.watch)
+    var appState = context.watch<AppState>();
     return SafeArea(
         child: Scaffold(
-      body: Column(
-        children: [
-          Text('Some random text:'),
-          TestText(),
-          TestChangeButton(),
-          TestButton(),
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            RandomTextCard(pair: appState.current),
+            SizedBox(height: 10),
+            Row(
+              // Prevent Row from taking all available horizontal space
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ToggleFavoriteButton(),
+                SizedBox(width: 10),
+                ChangeTextButton(),
+              ],
+            )
+          ],
+        ),
       ),
     ));
   }
 }
 
-class TestText extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    print('render test text');
-    var appState = context.watch<AppState>();
-    return Text(appState.current.asLowerCase);
-  }
-}
+class RandomTextCard extends StatelessWidget {
+  const RandomTextCard({
+    Key? key,
+    required this.pair,
+  }) : super(key: key);
 
-class TestChangeButton extends StatelessWidget {
+  final WordPair pair;
+
   @override
   Widget build(BuildContext context) {
-    print('render test changebutton');
-    var appState = context.watch<AppState>();
-    return ElevatedButton(
-      onPressed: () {
-        appState.getNext();
-      },
-      child: Text('Next'),
+    print('render RandomTextCard');
+    var theme = Theme.of(context);
+    // ! bypasses null safety, use when "potentially null" var is "definitely not null"
+    var style = theme.textTheme.displaySmall!
+        .copyWith(color: theme.colorScheme.onPrimary);
+    return Card(
+      color: theme.colorScheme.secondary,
+      shadowColor: theme.colorScheme.primary,
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Text(
+          pair.asLowerCase,
+          style: style,
+          // semanticsLabel for accessibility (e.g. screen readers)
+          semanticsLabel: pair.asPascalCase,
+        ),
+      ),
     );
   }
 }
 
-class TestButton extends StatelessWidget {
+class ToggleFavoriteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    print('render test button widget');
+    print('render ToggleFavoriteButton');
+    var appState = context.watch<AppState>();
+    var favorited = appState.favorites.contains(appState.current);
+    return ElevatedButton.icon(
+      onPressed: () {
+        appState.toggleFavorite();
+      },
+      icon: FavoriteButtonIcon(favorited: favorited),
+      label: FavoriteButtonText(favorited: favorited),
+    );
+  }
+}
+
+class FavoriteButtonText extends StatelessWidget {
+  const FavoriteButtonText({
+    Key? key,
+    required this.favorited,
+  }) : super(key: key);
+
+  final bool favorited;
+  @override
+  Widget build(BuildContext context) {
+    print('render FavoriteButtonHeart');
+    if (favorited) {
+      return Text('Remove');
+    }
+    return Text('Favorite');
+  }
+}
+
+class FavoriteButtonIcon extends StatelessWidget {
+  const FavoriteButtonIcon({
+    Key? key,
+    required this.favorited,
+  }) : super(key: key);
+
+  final bool favorited;
+  @override
+  Widget build(BuildContext context) {
+    print('render FavoriteButtonHeart');
+    if (favorited) {
+      return Icon(Icons.favorite);
+    }
+    return Icon(Icons.favorite_outline);
+  }
+}
+
+class ChangeTextButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    print('render ChangeTextButton');
+    var appState = context.watch<AppState>();
     return ElevatedButton(
       onPressed: () {
-        print('TEST');
+        appState.getNext();
       },
       child: Text('Next'),
     );
