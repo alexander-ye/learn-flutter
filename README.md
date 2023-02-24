@@ -1,8 +1,13 @@
-# Alex Learns Flutter
+# Alex Learns [Flutter](https://flutter.dev/)
 
-The result of following Google's ["first Flutter app" codelab](https://codelabs.developers.google.com/codelabs/flutter-codelab-first):
+This project is the result of following Google's ["first Flutter app" codelab](https://codelabs.developers.google.com/codelabs/flutter-codelab-first):
 
 > The application generates cool-sounding names, such as "newstay", "lightstream", "mainbrake", or "graypine". The user can ask for the next name, favorite the current one, and review the list of favorited names on a separate page. The app is responsive to different screen sizes.
+
+The relevant code lives in:
+* `pubspec.yaml` (similar to [`package.json`](https://docs.npmjs.com/cli/v9/configuring-npm/package-json) for [node](https://nodejs.org/en/about/) projects) 
+* `lib/` (similar to the `src` folder for [React](https://reactjs.org/) projects). 
+- Ignore `default/*`. This folder exists to preserve the default `main.dart` file that gets created when a user initiates a new Flutter project with `flutter new`. Keeping it as reference.
 
 ## To Run
 
@@ -34,14 +39,14 @@ Follow the steps under `Set up the iOS simulator` in the [Flutter Docs](https://
 
 ## Resources
 
-A few resources I used to get started:
+A few resources to get started:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+* [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+* [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
 There's also Flutter's [online documentation](https://docs.flutter.dev/), which provides:
 
-- Tutorials
-- Code samples
-- Guidance on mobile development
-- A full API reference.
+* Tutorials
+* Code samples
+* Guidance on mobile development
+* A full API reference.
