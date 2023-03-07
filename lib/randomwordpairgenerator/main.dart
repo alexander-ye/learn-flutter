@@ -8,6 +8,7 @@ class RandomWordPairGeneratorApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('render App');
     // Flutter's ChangeNotifierProvider ~ React's Context
     return ChangeNotifierProvider(
       // create: (context) => AppState() ~ <Context.Provider value={appStateWithSetters}>
@@ -45,9 +46,13 @@ class AppState extends ChangeNotifier {
   // [] indicates List, {} indicates Set
   var favorites = <WordPair>{};
 
+  void removeFavorite(WordPair wordpair) {
+    favorites.remove(wordpair);
+  }
+
   void toggleFavorite() {
     if (favorites.contains(current)) {
-      favorites.remove(current);
+      removeFavorite(current);
     } else {
       favorites.add(current);
     }
@@ -55,28 +60,102 @@ class AppState extends ChangeNotifier {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+// _ makes class private, enforced by compiler
+// State enables widget to manage its own values, which persist across renders
+class _HomeState extends State<Home> {
+  var selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
+    print('render Home');
+
+    Widget page;
+    Widget appbartitle;
+    switch (selectedIndex) {
+      case 0:
+        page = GeneratorPage();
+        appbartitle = Text('Word Pair Generator');
+        break;
+      case 1:
+        page = FavoritesPage();
+        appbartitle = Text('Favorite Pairs');
+        break;
+      default:
+        throw UnimplementedError('no widget for $selectedIndex');
+    }
+
+    // For web, we might want to use LayoutBuilder (to change widget tree depending on available space) with NavigationRail
+    // LayoutBuilder's builder() called every time constraints change (e.g. resize app window, rotate phone, adjacent widget grows, etc...)
     return Scaffold(
-      appBar: AppBar(),
-      drawer: NavigationDrawer(children: [
-        ElevatedButton.icon(
-          onPressed: () => print('todo'),
-          icon: Icon(Icons.home),
-          label: Text('Home'),
-        ),
-        ElevatedButton.icon(
-          onPressed: () => print('todo'),
-          icon: Icon(Icons.favorite),
-          label: Text('Favorites'),
-        ),
-      ]),
+      appBar: AppBar(title: appbartitle),
+      drawer: NavigationDrawer(
+          selectedIndex: selectedIndex,
+          onDestinationSelected: (value) {
+            setState(() {
+              selectedIndex = value;
+            });
+            Navigator.pop(context);
+          },
+          children: [
+            NavigationDrawerDestination(
+                icon: Icon(Icons.home), label: Text('Home')),
+            NavigationDrawerDestination(
+                icon: Icon(Icons.favorite), label: Text('Favorites')),
+          ]),
       body: Container(
         color: Theme.of(context).colorScheme.primaryContainer,
-        child: GeneratorPage(),
+        child: page,
       ),
     );
+  }
+}
+
+// You have X favorites
+// Add ability to remove favorites?
+class FavoritesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<AppState>();
+
+    if (appState.favorites.isEmpty) {
+      return Center(
+        child: Text('No favorites yet.'),
+      );
+    }
+
+    return Column(children: [
+      Padding(
+          padding: const EdgeInsets.all(20),
+          child: Text('You have ${appState.favorites.length} favorites')),
+      Expanded(
+          child: ListView(
+              children: appState.favorites.map((WordPair wordpair) {
+        return FavoriteListItem(pair: wordpair);
+      }).toList())),
+    ]);
+  }
+}
+
+class FavoriteListItem extends StatelessWidget {
+  const FavoriteListItem({Key? key, required this.pair}) : super(key: key);
+
+  final WordPair pair;
+
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<AppState>();
+    return ListTile(
+        leading: Icon(Icons.favorite),
+        title: Text(pair.asLowerCase, semanticsLabel: pair.asPascalCase),
+        trailing: ElevatedButton(
+            // BUG: removing pair does NOT reflect in UI until next render
+            onPressed: () => appState.removeFavorite(pair),
+            child: Text('X')));
   }
 }
 
@@ -85,7 +164,7 @@ class GeneratorPage extends StatelessWidget {
   // Flutter Widget's build() ~ React component's render()
   // build() must return a widget, gets called every time "relevant" state changes
   Widget build(BuildContext context) {
-    print('render Home screen');
+    print('render Generator page');
     // Flutter's context.watch<AppState>() ~ React's useContext(AppContext);
     // Observation: child widgets rerender even if they don't themselves call context.watch
     // (it seems all widgets rerender if a parent's state changes, even if only
@@ -96,6 +175,7 @@ class GeneratorPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           RandomTextCard(pair: appState.current),
+          // Flutter uses "logical pixels" ("device-independent pixels": 38px ~ 1cm)
           SizedBox(height: 10),
           Row(
             // Prevent Row from taking all available horizontal space

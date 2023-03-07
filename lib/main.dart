@@ -12,6 +12,6 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Replace the return value with an App of interest
-    return ShoppingCartApp();
+    return RandomWordPairGeneratorApp();
   }
 }
