@@ -9,12 +9,6 @@ class ShoppingCartApp extends StatelessWidget {
   }
 }
 
-class Product {
-  const Product({required this.name});
-
-  final String name;
-}
-
 // START OF ALEX STUFF >>>
 // Implement adding and removing products
 class ShoppingPlanner extends StatefulWidget {
@@ -27,12 +21,16 @@ class ShoppingPlanner extends StatefulWidget {
 class ShoppingPlannerState extends State<ShoppingPlanner> {
   final productList = <Product>[];
 
+  bool checkProductAddedByString(String text) {
+    return productList.map((product) {
+      return product.name;
+    }).contains(text);
+  }
+
   void handleAddProductByString(String text) {
-    final Product newProduct = Product(name: text);
     setState(() {
-      if (!productList.contains(newProduct)) {
-        productList.add(newProduct);
-      }
+      final Product newProduct = Product(name: text);
+      productList.add(newProduct);
     });
   }
 
@@ -50,7 +48,9 @@ class ShoppingPlannerState extends State<ShoppingPlanner> {
       Expanded(
           child: ShoppingList(
               products: productList, handleRemoveProduct: handleRemoveProduct)),
-      ProductInput(handleAddProduct: handleAddProductByString)
+      ProductInput(
+          handleAddProduct: handleAddProductByString,
+          checkProductAdded: checkProductAddedByString)
     ]);
   }
 }
@@ -58,21 +58,39 @@ class ShoppingPlannerState extends State<ShoppingPlanner> {
 typedef HandleProductByStringCallback = Function(String text);
 
 class ProductInput extends StatelessWidget {
-  const ProductInput({
+  ProductInput({
     required this.handleAddProduct,
+    required this.checkProductAdded,
     super.key,
   });
   final HandleProductByStringCallback handleAddProduct;
+  final HandleProductByStringCallback checkProductAdded;
+
+  final productNameInputController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return TextField(onSubmitted: handleAddProduct);
+    return TextField(
+        controller: productNameInputController,
+        onSubmitted: (String productName) {
+          if (checkProductAdded(productName)) {
+            return;
+          }
+          handleAddProduct(productName);
+          productNameInputController.clear();
+        });
   }
 }
 // <<< END OF ALEX STUFF
 
 // START OF TUTORIAL STUFF >>>
 // src: https://docs.flutter.dev/development/ui/widgets-intro
+
+class Product {
+  const Product({required this.name});
+
+  final String name;
+}
 
 // Dart's typedef ~ TypeScript's type
 typedef CartChangedCallback = Function(Product product, bool inCart);
