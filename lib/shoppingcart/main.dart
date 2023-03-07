@@ -177,6 +177,12 @@ class ShoppingList extends StatefulWidget {
   // widget (with the same key), the framework re-uses
   // the State object instead of creating a new State object.
 
+  // Keys control which widgets Flutter matches up with other widgets
+  // when a widget rebuilds; by default, framework matches widgets in current
+  // and previous build according to runtimeType and order in which they appear
+  // Keys most useful in widgets that build many instances of same type of widget
+  // (e.g. ShoppingList widget builds ShoppingListItem)
+
   @override
   State<ShoppingList> createState() => _ShoppingListState();
 }
