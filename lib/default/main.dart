@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 // This is the default main.dart file that comes once you run "flutter run"
 // I'm making a copy and storing it here for future reference.
-void main() {
-  runApp(const MyApp());
-}
+// void main() {
+//   runApp(const MyApp());
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
