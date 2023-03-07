@@ -48,15 +48,20 @@ class AppState extends ChangeNotifier {
 
   void removeFavorite(WordPair wordpair) {
     favorites.remove(wordpair);
+    notifyListeners();
+  }
+
+  void addFavorite(WordPair wordpair) {
+    favorites.add(wordpair);
+    notifyListeners();
   }
 
   void toggleFavorite() {
     if (favorites.contains(current)) {
       removeFavorite(current);
     } else {
-      favorites.add(current);
+      addFavorite(current);
     }
-    notifyListeners();
   }
 }
 
