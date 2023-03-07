@@ -57,6 +57,7 @@ class ShoppingPlannerState extends State<ShoppingPlanner> {
 
 typedef HandleProductByStringCallback = Function(String text);
 
+// BUG: Changing product list (by adding/removing) resets the TextField
 class ProductInput extends StatelessWidget {
   ProductInput({
     required this.handleAddProduct,
