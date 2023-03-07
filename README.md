@@ -8,7 +8,7 @@ Relevant code lives in:
 - `lib/` (similar to the `src` folder for [React](https://reactjs.org/) projects).
 
 * `default/*`: the default `main.dart` file that gets created when a user initiates a new Flutter project with `flutter new`. It's a counter app. Keeping it as reference.
-* `randomwordpairgenerator`: Google's ["first Flutter app" codelab](https://codelabs.developers.google.com/codelabs/flutter-codelab-first).
+* `randomwordpairgenerator`: Google's ["first Flutter app" codelab](https://codelabs.developers.google.com/codelabs/flutter-codelab-first) with the additional feature of removing favorites from the favorites screen.
 
   > The application generates cool-sounding names, such as "newstay", "lightstream", "mainbrake", or "graypine". The user can ask for the next name, favorite the current one, and review the list of favorited names on a separate page. The app is responsive to different screen sizes.
 

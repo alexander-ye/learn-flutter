@@ -46,6 +46,7 @@ class AppState extends ChangeNotifier {
   // [] indicates List, {} indicates Set
   var favorites = <WordPair>{};
 
+  // ALEX STUFF >>>
   void removeFavorite(WordPair wordpair) {
     favorites.remove(wordpair);
     notifyListeners();
@@ -64,6 +65,7 @@ class AppState extends ChangeNotifier {
     }
   }
 }
+// <<< ALEX STUFF
 
 class Home extends StatefulWidget {
   @override
@@ -80,6 +82,7 @@ class _HomeState extends State<Home> {
     print('render Home');
 
     Widget page;
+    // ALEX STUFF >>>
     Widget appbartitle;
     switch (selectedIndex) {
       case 0:
@@ -93,10 +96,12 @@ class _HomeState extends State<Home> {
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
+    // <<< ALEX STUFF
 
     // For web, we might want to use LayoutBuilder (to change widget tree depending on available space) with NavigationRail
     // LayoutBuilder's builder() called every time constraints change (e.g. resize app window, rotate phone, adjacent widget grows, etc...)
     return Scaffold(
+      // ALEX STUFF >>>
       appBar: AppBar(title: appbartitle),
       drawer: NavigationDrawer(
           selectedIndex: selectedIndex,
@@ -112,6 +117,7 @@ class _HomeState extends State<Home> {
             NavigationDrawerDestination(
                 icon: Icon(Icons.favorite), label: Text('Favorites')),
           ]),
+      // <<< ALEX STUFF
       body: Container(
         color: Theme.of(context).colorScheme.primaryContainer,
         child: page,
@@ -120,8 +126,7 @@ class _HomeState extends State<Home> {
   }
 }
 
-// You have X favorites
-// Add ability to remove favorites?
+// ALEX STUFF >>>
 class FavoritesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -158,11 +163,11 @@ class FavoriteListItem extends StatelessWidget {
         leading: Icon(Icons.favorite),
         title: Text(pair.asLowerCase, semanticsLabel: pair.asPascalCase),
         trailing: ElevatedButton(
-            // BUG: removing pair does NOT reflect in UI until next render
-            onPressed: () => appState.removeFavorite(pair),
-            child: Text('X')));
+            onPressed: () => appState.removeFavorite(pair), child: Text('X')));
   }
 }
+
+// <<< ALEX STUFF
 
 class GeneratorPage extends StatelessWidget {
   @override
