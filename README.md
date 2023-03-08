@@ -13,7 +13,12 @@ Relevant code lives in:
   > The application generates cool-sounding names, such as "newstay", "lightstream", "mainbrake", or "graypine". The user can ask for the next name, favorite the current one, and review the list of favorited names on a separate page. The app is responsive to different screen sizes.
 
 * `shoppingcart`: Google's ["Introduction to widgets"](https://docs.flutter.dev/development/ui/widgets-intro#bringing-it-all-together) with the additional feature of adding and removing products.
+
   > A hypothetical shopping application displays various products offered for sale, and maintains a shopping cart for intended purchases.
+
+* `expansionpanels`: Google's ["ExpansionPanelList class example"](https://api.flutter.dev/flutter/material/ExpansionPanelList-class.html).
+
+  > Here is a simple example of how to implement ExpansionPanelList.
 
 ## To Run
 
